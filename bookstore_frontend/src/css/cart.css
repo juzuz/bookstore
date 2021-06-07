@@ -1,0 +1,118 @@
+.cart-container .cart-box {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 40px 10px 10px 10px;
+
+}
+
+.ant-card-body{
+    /*padding:10px;*/
+    margin-top:5px;
+}
+
+.ant-content-card {
+    border-left:0px;
+    border-right:0px;
+    margin-left:5px;
+    margin-right:5px;
+}
+
+.book-selector {
+    float:left;
+    margin-top:65px !important;
+    padding-right: 10px !important;
+}
+
+
+
+
+.ab {
+    color: #007185 !important;
+}
+
+.ant-btn-link {
+    color: #007185 !important;
+    margin-top: 30px;
+    /*float:left;*/
+}
+
+.description {
+    font-weight: bold;
+    font-size:18px;
+    color: #007185;
+}
+
+.book-image{
+    float:left;
+}
+
+.info{
+    list-style: none;
+    padding-left: 0px !important;
+    margin-top:-15px !important;;
+}
+
+.cart-title {
+    margin-left:1%;
+    font-weight: bold;
+    font-size: 28px;
+    line-height: 36px;
+
+}
+
+.cart-empty-text {
+    margin-left:1%;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.card-deselect {
+    margin-top: 0.5%;
+    margin-bottom: 0.5%;
+    margin-left: 1.2%;
+    color: #007185;
+    padding:0px!important;
+}
+
+.divider-container {
+    float: right;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    width:25%;
+}
+
+.sum {
+    margin-left: 7px;
+    margin-top:10px;
+    float:right;
+    font-weight:bold;
+    font-size:16px;
+    color:black !important;
+}
+
+.purchase-button {
+    float:right;
+    margin-top:10px;
+    margin-right: 1%;
+    padding:2px;
+}
+
+.stock-style{
+    color:#2A7E19;
+}
+
+.information-list {
+    float:left;
+}
+
+
+.priceInCart {
+    float:right;
+    font-weight:bold;
+    font-size:16px;
+    color:black !important;
+}
+

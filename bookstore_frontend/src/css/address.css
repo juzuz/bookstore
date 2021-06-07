@@ -1,0 +1,69 @@
+.address-title {
+    padding-left: 9px;
+    font-size: x-large;
+    font-weight: bold;
+}
+
+.address-title-container{
+    margin-top: 20px;
+    flex:1;
+    border: solid #939393;
+    border-top-width: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+    /*border-bottom: #9e9e9e;*/
+}
+
+.address-card-container{
+    flex-direction: row;;
+    flex-wrap: wrap;
+    display: flex;
+}
+
+.address-card-margin{
+    margin:10px;
+
+}
+
+.new-address-card{
+    margin:10px;
+    border-style: dashed;
+    width:320px;
+    height:220px;
+    vertical-align:middle;
+    text-align: center;
+    display: table-cell;
+}
+
+.new-address-card-content{
+}
+
+.address-card{
+    margin:10px;
+    border-style: dashed;
+    width:320px;
+    height:220px;
+    vertical-align:top;
+    text-align: left;
+    display: table-cell;
+}
+.address-card-content{
+    margin-left:15px;
+    margin-top:15px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+.address-form{
+    display:block;
+    padding:50px;
+}
+
+.address-input-title{
+    text-align: left;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-size: 15px;
+}

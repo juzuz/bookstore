@@ -1,0 +1,49 @@
+.receipt-card{
+    margin-top:60px;
+}
+
+.info-container {
+    vertical-align: center;
+    text-align: center;
+}
+
+.confirm-button{
+    margin-top:10px;
+}
+
+.personal-info{
+    float:left;
+}
+
+.receipt-info{
+    float: right;
+}
+
+.receipt-title{
+    margin-top:60px;
+    font-size: xx-large;
+    font-weight: bold;
+}
+
+.receipt-col{
+    margin-top:10px;
+}
+
+.r-title{
+    font-weight: bold;
+}
+
+.r-quantity{
+}
+
+.r-price{
+}
+
+.r-sum{
+}
+.address-selector-title{
+    font-weight: bold;
+    font-size: x-large;
+    margin-top:20px;
+    margin-bottom: 10px;
+}
