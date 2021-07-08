@@ -10,25 +10,26 @@ export class BookList extends React.Component{
 
     constructor(props) {
         super(props);
-        this.state = {books:[],edit:[]};
+        this.state = {data:[],edit:[],pages:1};
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if(prevProps.data !== this.props.data){
-            this.props.data.sort((a, b) => (a.removed) - (b.removed));
-            this.setState({books:this.props.data})
-        }
-
+    retrieveData = (page) => {
+        const callback =  (data) => {
+            this.setState({data:data.content,pages:data.totalElements});
+            this.props.callback({data:data});
+        };
+        getBooks({page:page}, callback);
     }
 
     componentDidMount() {
-        // const includeRemove = this.props.include;
-        // const callback =  (data) => {
-        //     if(!this.props.grid)
-        //         data.sort((a, b) => (a.removed) - (b.removed));
-        // this.setState({books:data, edit:Array(data.length).fill(false)});
-        // };
-        // getBooks({"include":includeRemove}, callback);
+        this.retrieveData(0);
+    }
+
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        if(nextProps.data.content !== this.state.data ){
+            this.setState({data:nextProps.data.content,pages:nextProps.data.totalElements})
+        }
+        return true;
     }
 
 
@@ -41,7 +42,6 @@ export class BookList extends React.Component{
     }
 
     handleRemove = (id) => {
-
         let data = {bookId:id}
         const callback = (status) =>{
             if(status)
@@ -55,19 +55,20 @@ export class BookList extends React.Component{
 
     render() {
         const {grid} = this.props;
-        const {edit} = this.state;
+        const {data,pages,edit} = this.state;
         const callback = () => {
                 window.location.reload();
         }
         return (
             <List
                 grid={grid?{gutter: 10, column: 4}:0}
-                dataSource={this.state.books}
+                dataSource={data}
                 pagination={{
                     onChange: page => {
-                        console.log(page);
+                        this.retrieveData(page-1)
                     },
                     pageSize: 16,
+                    total:pages,
                 }}
 
                 renderItem={(item,idx) => (
@@ -85,9 +86,9 @@ export class BookList extends React.Component{
                                             <div style={{display:"flex",flexDirection:"column",justifyContent:"space-around"}}>
                                                 <Button onClick={() => this.handleEditClick(idx)} disabled={item.removed}>Edit</Button>
                                                 <Button onClick={()=> this.handleRemove(item.id)}>
-                                                    {
-                                                        item.removed?"Restore":"Remove"
-                                                    }
+                                                    <div>
+                                                        Remove
+                                                    </div>
                                                 </Button>
                                             </div>
                                             <List.Item.Meta

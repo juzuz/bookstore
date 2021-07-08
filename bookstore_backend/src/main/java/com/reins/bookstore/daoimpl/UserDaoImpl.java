@@ -62,7 +62,32 @@ public class UserDaoImpl implements UserDao {
     @Override
     public List<UserAuth> getUserByType(Integer type){
         if(type == -1)
-            return userAuthRepository.findAll();
-        return userAuthRepository.findAllByUserType(type);
+            return userAuthRepository.findAllByRemoved(false);
+        return userAuthRepository.findAllByUserTypeAndRemoved(type,false);
+    }
+
+    @Override
+    public boolean softRemove(Integer userId){
+        UserAuth uA = userAuthRepository.findById(userId).orElse(null);
+        if(uA == null)
+            return false;
+
+        uA.setRemoved(true);
+        userAuthRepository.save(uA);
+        return true;
+    }
+
+    @Override
+    public void setUserCookie(Integer id, String cookie){
+        UserAuth uA = userAuthRepository.findById(id).orElse(null);
+        if(uA != null){
+            uA.setCookie(cookie);
+        }
+        userAuthRepository.save(uA);
+    }
+
+    @Override
+    public UserAuth getByCookie(String cookie){
+        return userAuthRepository.findByCookie(cookie);
     }
 }

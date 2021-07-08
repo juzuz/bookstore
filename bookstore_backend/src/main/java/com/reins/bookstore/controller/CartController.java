@@ -40,7 +40,6 @@ public class CartController {
     @RequestMapping("/deleteCartItem")
     public boolean deleteCartItem(@RequestParam("userId") Integer userId, @RequestParam("bookId") Integer bookId ){
         cartService.deleteItem(userId,bookId);
-
         return true;
 
     }

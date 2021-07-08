@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import { List, message, Avatar, Spin } from 'antd';
+import { List } from 'antd';
 import {getUsers,setLock} from "../services/userService";
 import "../css/userManagement.css";
-import InfiniteScroll from 'react-infinite-scroller';
-
-import {LockOutlined ,UnlockOutlined } from "@ant-design/icons";
+import {deleteUser} from '../services/userService'
+import {LockOutlined ,UnlockOutlined,WarningOutlined} from "@ant-design/icons";
 
 
 const UserManagement = () => {
@@ -12,9 +11,6 @@ const UserManagement = () => {
     const [managers,setManagers] = useState([]);
     const [users,setUsers] = useState([]);
     const [lockStatus,setLockStatus] = useState([]);
-    const [loading,setLoading] = useState(false);
-    const [hasMore,setHasMore] = useState(true);
-
 
     const retrieveData = (type) => {
         const callback = (values) => {
@@ -30,7 +26,6 @@ const UserManagement = () => {
                 })
                 setLockStatus(lock);
             }
-            setLoading(false);
 
         }
         let data = {type:type}
@@ -60,34 +55,12 @@ const UserManagement = () => {
         )
     }
 
-
-    const handleInfiniteOnLoad = () => {
-        // this.setState({
-        //     loading: true,
-        // });
-        // if (data.length > 14) {
-        //     message.warning('Infinite List loaded all');
-        //     this.setState({
-        //         hasMore: false,
-        //         loading: false,
-        //     });
-        //     return;
-        // }
-        // retrieveData();
-    };
-
     return (
         <div>
             <div className="infinite-container-managers">
                 <div className="title">Managers</div>
 
-                <InfiniteScroll
-                    initialLoad={false}
-                    pageStart={0}
-                    loadMore={() => {handleInfiniteOnLoad()}}
-                    hasMore={!loading && hasMore}
-                    useWindow={false}
-                >
+
                     <List
                         dataSource={managers}
                         renderItem={item =>(
@@ -96,30 +69,34 @@ const UserManagement = () => {
                             </List.Item>
                         )}
                     >
-                        {loading && hasMore && (
-                            <div className="demo-loading-container">
-                                <Spin />
-                            </div>
-                        )}
+
                     </List>
-                </InfiniteScroll>
             </div>
 
 
             <div className="infinite-container-users">
                 <div className="title">Users</div>
-                <InfiniteScroll
-                    initialLoad={false}
-                    pageStart={0}
-                    loadMore={() => {handleInfiniteOnLoad()}}
-                    hasMore={!loading && hasMore}
-                    useWindow={false}
-                >
+
                     <List
                         dataSource={users}
                         renderItem={(item,idx) =>(
-                            <List.Item className="user-list-item" key ={item.userId}>
+                            <List.Item className="user-list-item" key ={item.id}>
                                 <List.Item.Meta title ={"Username: " + item.username}  />
+                                <div>
+                                    <WarningOutlined style={{
+                                        fontSize: '30px',
+                                        marginBottom: '10px',
+                                        marginRight: '20px'
+                                    }}
+                                    onClick={()=>{
+
+                                        deleteUser({id: item.id})
+                                    }}
+                                    />
+                                    <div style={{paddingRight:"10px"}}>
+                                        Remove
+                                    </div>
+                                </div>
                                 <div className={"lock"}>
                                     {lockStatus[idx] ?
                                         <div className = "lock-container">
@@ -131,7 +108,7 @@ const UserManagement = () => {
                                         onClick={()=>{handleLock(false,item.id,idx)}}
                                         />
                                         <div style={{alignItems:"center"}}>
-                                            Status: Locked
+                                            Unlock
                                         </div>
                                         </div>
                                             :
@@ -145,7 +122,7 @@ const UserManagement = () => {
                                            onClick={()=>handleLock(true,item.id,idx)}
                                         />
                                         <div style={{textAlign:"center"}}>
-                                        Status: Normal Access
+                                        Lock
                                         </div>
                                         </div>
                                     }
@@ -154,13 +131,8 @@ const UserManagement = () => {
                             </List.Item>
                         )}
                     >
-                        {loading && hasMore && (
-                            <div className="demo-loading-container">
-                                <Spin />
-                            </div>
-                        )}
+
                     </List>
-                </InfiniteScroll>
             </div>
         </div>
     );

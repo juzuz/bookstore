@@ -1,10 +1,8 @@
 import React from 'react';
-import {Descriptions, Button, Select, InputNumber, message, Input,Card} from 'antd';
-import {addToCart, deleteItem} from "../services/cartService";
-import {EditOutlined,CheckCircleOutlined, StopOutlined } from "@ant-design/icons";
-import {format} from 'date-fns';
+import {Descriptions, Button, Select, InputNumber, message} from 'antd';
+import {addToCart} from "../services/cartService";
+import {EditOutlined} from "@ant-design/icons";
 import {history} from "../utils/history";
-import {updateBook} from "../services/bookService";
 import WrappedEditForm from "./EditBookForm";
 
 //TODO CREATE FORM FOR EDIT
@@ -55,7 +53,7 @@ export class BookDetail extends React.Component{
             userId: JSON.parse(localStorage.getItem("user")).userId,
             bookId: id,
             quantity:parseInt(this.state.quantity),
-
+            fromCart:false,
         }
         const callback = (data) => {
             if(data.status >= 0) {
@@ -93,7 +91,6 @@ export class BookDetail extends React.Component{
 
 
     render() {
-        const { TextArea } = Input;
         const {info} = this.props;
         const {Option} = Select;
 

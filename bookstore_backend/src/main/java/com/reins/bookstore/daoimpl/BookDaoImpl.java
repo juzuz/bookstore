@@ -5,11 +5,15 @@ import com.reins.bookstore.entity.Book;
 import com.reins.bookstore.repository.BookRepository;
 import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.IdClass;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+
 /**
  * @ClassName BookDaoImpl
  * @Description TODO
@@ -24,17 +28,26 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public Book findById(Integer id){
-        return bookRepository.findById(id).orElse(null);
+        return bookRepository.findByIdAndRemoved(id,false);
     }
 
+
+
     @Override
-    public List<Book> getBooks(boolean includeRemove){
-
-        if(includeRemove){
-            return bookRepository.findAll();
-
+    public Page<Book> getBooks(Optional<Integer> page,String query){
+        if(query == "")
+        {
+            return bookRepository.findAllByRemoved(false,
+                    PageRequest.of(
+                            page.orElse(0),16
+                    )
+            );
         }
-        return bookRepository.findByRemovedFalse();
+        else{
+            return bookRepository.findByNameContainsAndRemoved(query,false,PageRequest.of(
+                    page.orElse(0),16
+            ));
+        }
     }
 
     @Override

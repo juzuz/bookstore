@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Card, Divider,Row,Col,List} from "antd";
-import {submitOrder,submitOrders} from "../services/orderService";
+import {submitOrders} from "../services/orderService";
 import "../css/receipt.css";
 import {getAddress} from "../services/userService";
-import InfiniteScroll from 'react-infinite-scroller';
 import WrappedAddressForm from "./AddressForm";
 
 function renderItems(data){
@@ -14,12 +13,8 @@ function renderItems(data){
             <Col span={6} >{data.title}</Col>
             <Col span={8}/>
             <Col span={3} >{data.quantity}</Col>
-
             <Col span={3} >{data.price.toFixed(2)}</Col>
-
-
             <Col span={3} >{(data.quantity * data.price).toFixed(2)}</Col>
-
         </Row>
         <Divider/>
         </div>
@@ -42,6 +37,7 @@ function  calcSum(data)
 const PurchaseConfirmation = (props) => {
     const [address,setAddress] = useState([]);
     const [shippingAddress, setShippingAddress] = useState("");
+    const [newAddressToggle, setNewAddressToggle] = useState(false);
 
     const handlePurchase = () => {
         let i;
@@ -65,18 +61,14 @@ const PurchaseConfirmation = (props) => {
 
     const callback= (data) => {
         setShippingAddress(data);
+        setNewAddressToggle(false);
     }
 
     return (
             <div className={'info-container'}>
                 <div className="address-selector-title">Select an Address</div>
-                {address.length  ?
-                    <InfiniteScroll
-                        initialLoad={false}
-                        pageStart={0}
-                        useWindow={false}
+                {address.length && !newAddressToggle ?
 
-                    >
                         <List dataSource={address}
                               grid={{ gutter: 20, column: 3 }}
                               renderItem={item => (
@@ -94,11 +86,10 @@ const PurchaseConfirmation = (props) => {
                                   </List.Item>
                               )}
                         >
-
                         </List>
-                    </InfiniteScroll> :
+                    :
                     <div>
-                        {shippingAddress === ""?
+                        {(address.length === 0 || newAddressToggle) && shippingAddress===""?
                             <div>
                             <div style={{fontSize:"20px",textAlign:"center"}}>Use a new Address</div>
                                 < WrappedAddressForm type={"receipt"} callback={callback}/>
@@ -107,8 +98,9 @@ const PurchaseConfirmation = (props) => {
                         }
                     </div>
                 }
-                {address.length || shippingAddress!== "" ?
+                {((address.length !== 0 && !newAddressToggle) || shippingAddress!=="")?
                     <div>
+                    <Button onClick={() => {setNewAddressToggle(true);setShippingAddress("")}}>Use A New Address</Button>
                     <Card className="receipt-card">
                         <div className='personal-info'>
                             {shippingAddress.name}

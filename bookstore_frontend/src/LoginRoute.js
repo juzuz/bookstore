@@ -1,7 +1,7 @@
 import React from 'react';
-import {Route, Redirect} from 'react-router-dom'
+import {Route} from 'react-router-dom'
 import * as userService from "./services/userService"
-import {message} from "antd";
+import Cookies from "js-cookie";
 
 export class LoginRoute extends React.Component{
     constructor(props) {
@@ -13,7 +13,6 @@ export class LoginRoute extends React.Component{
     }
 
     checkAuth = (data) => {
-        console.log(data);
         if (data.status >= 0) {
             this.setState({isAuthed: true, hasAuthed: true});
         } else {
@@ -25,6 +24,8 @@ export class LoginRoute extends React.Component{
 
     componentDidMount() {
         userService.checkSession(this.checkAuth);
+        let cookie = Cookies.get("remember");
+        userService.cookieLogin({cookie:cookie})
     }
 
 
@@ -32,21 +33,21 @@ export class LoginRoute extends React.Component{
 
         const {component: Component, path="/",exact=false,strict=false} = this.props;
 
-        console.log(this.state.isAuthed);
 
         if (!this.state.hasAuthed) {
             return null;
         }
 
+        console.log("LOG PROC",this.props.location.proceed)
         return <Route path={path} exact={exact} strict={strict} render={props => (
-            this.state.isAuthed ? (
-                <Redirect to={{
-                    pathname: '/',
-                    state: {from: props.location}
-                }}/>
-            ) : (
+            // this.state.isAuthed ? (
+            //     <Redirect to={{
+            //         pathname: '/',
+            //         state: {from: props.location}
+            //     }}/>
+            // ) : (
                 <Component {...props}/>
-            )
+            // )
         )}/>
     }
 }

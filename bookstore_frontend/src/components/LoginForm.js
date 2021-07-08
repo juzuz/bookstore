@@ -1,10 +1,8 @@
-import React,{useState} from 'react';
+import React from 'react';
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 import 'antd/dist/antd.css';
 import '../css/login.css'
 import * as userService from '../services/userService'
-import {Redirect, Route} from "react-router-dom";
-
 
 class LoginForm extends React.Component {
 
@@ -17,6 +15,8 @@ class LoginForm extends React.Component {
             }
         });
     };
+
+
 
     render() {
         const { getFieldDecorator } = this.props.form;

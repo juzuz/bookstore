@@ -7,6 +7,7 @@ import com.reins.bookstore.compositeKey.AddressId;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,15 +21,15 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "USER")
-@JsonIgnoreProperties(value = {"handler","hibernateLazyInitializer","fieldHandler"})
 public class User {
     private Integer userId;
     private String name = null;
     private String tel = null;
     private String email = null;
 
-    private Set<Book> inCart = new HashSet<>();
+    private Set<Cart> userCart = new HashSet<>();
     private Set<Address> addresses = new HashSet<>();
+    private List<Orders> userOrders = new ArrayList<>();
 
 
     public User(){};
@@ -46,33 +47,25 @@ public class User {
     }
 
 
-    public String getTel(){
-        return tel;
-    }
-    public void setTel(String tel){
-        this.tel = tel;
-    }
 
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JoinColumn(name="userId")
+    public Set<Cart> getUserCart(){ return userCart;}
+    public void setUserCart(Set<Cart> uCart){this.userCart = uCart;}
 
-
-    @ManyToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE},fetch = FetchType.EAGER)
-    @JoinTable(name="CART",
-            joinColumns = @JoinColumn(name="userId",referencedColumnName = "userId"),
-            inverseJoinColumns = @JoinColumn(name="bookId",referencedColumnName = "id")
-    )
-    public Set<Book> getInCart(){
-        return inCart;
-    }
-    public void setInCart(Set<Book> inCart){
-        this.inCart = inCart;
-    }
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "userId")
     public Set<Address> getAddresses() { return addresses;}
-
-    public void setAddresses(Set<Address> addresses) {
+    private void setAddresses(Set<Address> addresses) {
         this.addresses = addresses;
     }
+
+
+    @OneToMany(cascade = {CascadeType.MERGE,CascadeType.PERSIST},fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",referencedColumnName = "userId")
+    public List<Orders> getUserOrders(){ return userOrders;}
+    private void setUserOrders(List<Orders> uOrders){this.userOrders = uOrders;}
+
 
 }

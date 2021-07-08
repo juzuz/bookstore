@@ -57,6 +57,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean softRemove(Integer userId){
+        return userDao.softRemove(userId);
+    }
+
+    @Override
     public UserAuth getUserAccount(Integer userId){
         return userDao.getUserAccount(userId);
     }
@@ -74,10 +79,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Set<Address> getAddress(Integer userId){
+    public Set<Address> getAllUserAddress(Integer userId){
         User u = userDao.getUserProfile(userId);
         return u.getAddresses();
     }
+
+
 
     @Override
     public Address addAddress(Address add){
@@ -87,5 +94,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public void removeAddress(Integer addressId){
         addressDao.removeAddress(addressId);
+    }
+
+    @Override
+    public void setUserCookie(Integer id, String cookie){
+         userDao.setUserCookie(id,cookie);
+    }
+
+    @Override
+    public UserAuth getByCookie(String cookie){
+        return userDao.getByCookie(cookie);
     }
 }

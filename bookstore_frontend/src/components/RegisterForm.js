@@ -1,9 +1,8 @@
-import React,{useState} from 'react';
-import {Form, Icon, Input, Button, Checkbox, message} from 'antd';
+import React from 'react';
+import {Form, Icon, Input, Button} from 'antd';
 import 'antd/dist/antd.css';
 import '../css/login.css'
 import * as userService from '../services/userService'
-import {Redirect, Route} from "react-router-dom";
 import {EyeInvisibleOutlined, EyeTwoTone} from "@ant-design/icons";
 
 

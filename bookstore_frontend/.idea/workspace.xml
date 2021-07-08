@@ -27,17 +27,17 @@
       <change afterPath="$PROJECT_DIR$/src/components/Book.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/components/BookCarousel.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/components/BookDetail.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/BookList.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/BookListEdit.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/components/Cart.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/components/EditBookForm.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/components/HeaderInfo.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/components/LoginForm.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/components/MyProfile.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/components/NewBookForm.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/OrderManagement.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/OrderManagementEdit.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/components/PurchaseConfirmation.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/components/RegisterForm.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/SearchBar.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/SearchBarEdit.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/components/SideBar.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/components/Stats.js" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/components/UserAvatar.js" afterDir="false" />
@@ -88,8 +88,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="JavaScript File" />
         <option value="CSS File" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -119,7 +119,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/components" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/services" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
@@ -140,11 +140,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\juzu\Documents\Code\Github\bookstore 4th\bookstore_frontend\src\services" />
+      <recent name="C:\Users\juzu\Documents\Code\Github\bookstore 4th\bookstore_frontend\src\components" />
       <recent name="C:\Users\juzu\Documents\Code\Github\New folder\bookstore_frontend\src\components" />
       <recent name="C:\Users\juzu\Documents\Code\Github\New folder\bookstore_frontend\src\view" />
       <recent name="C:\Users\juzu\Documents\Code\Github\New folder\bookstore_frontend\src\css" />
-      <recent name="C:\Users\juzu\Documents\Code\Github\BookStore\bookstore-all\bookstore_frontend\src\components" />
-      <recent name="C:\Users\juzu\Documents\Code\Github\BookStore\bookstore-all\bookstore_frontend\src\view" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\juzu\Documents\Code\Github\BookStore\bookstore-all\bookstore_frontend\src\assets" />
@@ -224,6 +224,15 @@
       <workItem from="1621995058686" duration="20101000" />
       <workItem from="1622077942889" duration="11634000" />
       <workItem from="1622122981127" duration="594000" />
+      <workItem from="1623359690424" duration="344000" />
+      <workItem from="1623469863608" duration="2693000" />
+      <workItem from="1623523964405" duration="4578000" />
+      <workItem from="1623593658937" duration="2047000" />
+      <workItem from="1623772558401" duration="411000" />
+      <workItem from="1623773271226" duration="449000" />
+      <workItem from="1623773739593" duration="12889000" />
+      <workItem from="1625001017796" duration="62560000" />
+      <workItem from="1625358208349" duration="8233000" />
     </task>
     <servers />
   </component>

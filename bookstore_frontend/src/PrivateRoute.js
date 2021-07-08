@@ -1,7 +1,5 @@
 import React from 'react';
 import {Route, Redirect} from 'react-router-dom'
-import * as userService from "./services/userService"
-import {message} from "antd";
 
 export default class PrivateRoute extends React.Component{
     constructor(props) {
@@ -12,40 +10,24 @@ export default class PrivateRoute extends React.Component{
         };
     }
 
-    checkAuth = (data) => {
-        console.log(data);
-        if (data.status >= 0) {
-            this.setState({isAuthed: true, hasAuthed: true});
-        } else {
-            message.error(data.msg);
-            localStorage.removeItem('user');
-            this.setState({isAuthed: false, hasAuthed: true});
-        }
-    };
 
 
-    componentDidMount() {
-        userService.checkSession(this.checkAuth);
-    }
 
 
     render() {
 
         const {component: Component, path="/",exact=false,strict=false} = this.props;
 
-        console.log(this.state.isAuthed);
 
-        if (!this.state.hasAuthed) {
-            return null;
-        }
-
+        let proceed = this.props.location.state === undefined?false:true;
         return <Route path={path} exact={exact} strict={strict} render={props => (
-            this.state.isAuthed ? (
+             proceed ? (
                 <Component {...props}/>
             ) : (
                 <Redirect to={{
                     pathname: '/login',
-                    state: {from: props.location}
+                    state: {from: props.location},
+                    proceed: proceed
                 }}/>
             )
         )}/>

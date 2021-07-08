@@ -16,32 +16,37 @@ import java.util.Set;
  * @Author thunderBoy
  * @Date 2019/11/5 19:19
  */
-@Data
 @Entity
 @Table(name = "ORDERS")
-@JsonIgnoreProperties(value = {"handler","hibernateLazyInitializer","fieldHandler"})
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,property = "bookId")
-
+@Data
 public class Orders {
-
+    @Id
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
     @Column(name= "order_id")
-    private int orderId;
+    private Integer orderId;
     @Column(name = "user_id")
-    private int userId;
+    private Integer userId;
+    @Temporal(TemporalType.DATE)
     @Column(name = "order_date")
     private Date orderDate;
-    @Column(name="name")
-    private String name;
-    @Column(name = "address")
-    private String address;
-    @Column(name = "phone")
-    private String phone;
+    @Column(name = "address_id")
+    private Integer addressId;
+    @Column(name = "address_backup")
+    private String addressBackup;
 
 
+    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinColumn(name = "user_id", referencedColumnName = "userId",insertable = false,updatable = false)
     private UserAuth buyer;
 
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    @JoinColumn(name="order_id",insertable = false,updatable = false)
+    private Set<OrderItems> orderItems = new HashSet<>();
 
-    private Set<Book> orderItems = new HashSet<>();
+    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinColumn(name = "address_id", referencedColumnName = "addressId",insertable = false,updatable = false)
+    private Address address;
 
 
 
@@ -49,61 +54,19 @@ public class Orders {
 
     }
 
-    public Orders(Integer userId, Date cur,String name, String address,String phone) {
+    public Orders(Integer userId, Date cur, Integer addressId) {
         this.userId = userId;
         this.orderDate = cur;
-        this.name = name;
-        this.address = address;
-        this.phone = phone;
+        this.addressId = addressId;
     }
 
-
-    @Id
-    @GeneratedValue(generator = "increment")
-    @GenericGenerator(name = "increment", strategy = "increment")
-    public int getOrderId() {
-        return orderId;
-    }
-    private void setOrderId(int orderId) {
-        this.orderId = orderId;
-    }
-
-    public int getUserId(){
-        return userId;
-    }
-    public void setUserId(int id){
-        this.userId = id;
-    }
-
-    @Temporal(TemporalType.TIMESTAMP)
-    public Date getOrderDate() {return orderDate;}
-    public void setOrderDate(Date date) { this.orderDate = date;}
-
-    public String getName(){return name;}
-    public void setName(String name){this.name = name;}
-
-    public String getAddress(){return address;}
-    public void setAddress(String address){this.address = address;}
-
-    public String getPhone(){return phone;}
-    public void setPhone(String phone){this.phone = phone;}
-
-    @ManyToMany(cascade ={ CascadeType.MERGE},fetch = FetchType.EAGER)
-    @JoinTable(name="ORDERITEMS",
-            joinColumns = @JoinColumn(name="order_id",referencedColumnName = "orderId"),
-            inverseJoinColumns = @JoinColumn(name="book_id",referencedColumnName = "id")
-    )
-    public Set<Book> getOrderItems(){
+    public Set<OrderItems> getOrderItems(){
         return orderItems;
     }
-    public void setOrderItems(Set<Book> orderItems){
+    public void setOrderItems(Set<OrderItems> orderItems){
         this.orderItems = orderItems;
     }
 
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "userId", referencedColumnName = "userId",insertable = false,updatable = false)
-    public UserAuth getBuyer(){return buyer;}
-    public void setBuyer(UserAuth buyer){this.buyer = buyer;}
-
+    public String getBuyer(){return buyer.getUsername();}
 }

@@ -1,49 +1,34 @@
 import React, {useEffect, useState} from 'react';
-import {List, message, DatePicker, Button,Card} from 'antd';
-import {getBooks} from '../services/bookService';
-import {getOrders} from "../services/orderService";
+import {List, DatePicker,Card} from 'antd';
+import {getOrdersByUserAndDate} from "../services/orderService";
 import "../css/orderManagement.css";
 import "../css/order.css"
-import {format} from "date-fns";
-import InfiniteScroll from 'react-infinite-scroller';
 import moment from 'moment';
 
-
-
-function DateFormat (date){
-    let oldDate = new Date(date);
-    return format(oldDate,' MMMM do, yyyy');
-
-}
 
 
 
 const Stats = (props) => {
 
     const [data,setData] = useState([]);
-    const [bookList,setBookList] = useState([]);
+
     const [loading,setLoading] = useState(true);
-    const [hasMore,setHasMore] = useState(true);
     const [filterDates,setFilterDates] = useState([]);
     const {RangePicker} = DatePicker;
 
-    const retrieveData = () => {
-        const {userId,userType} = JSON.parse(localStorage.getItem("user"));
+    const retrieveData = (val) => {
+        const {userId} = JSON.parse(localStorage.getItem("user"));
 
         const callback = (values) => {
             setData(values)
         }
 
-        const bookCallback = (values) => {
-            setBookList(values)
-        }
-        getBooks({include:true},bookCallback)
-        getOrders({id:userId},callback);
+        getOrdersByUserAndDate({id:userId,dates:val},callback);
     }
 
     useEffect(()=>{
         setLoading(true)
-        retrieveData();
+        retrieveData(filterDates);
         const timer = setTimeout(() => {
             setLoading(false);
         }, 1000);
@@ -51,59 +36,42 @@ const Stats = (props) => {
     },[])
 
 
-    const handleInfiniteOnLoad = () => {
-        this.setState({
-            loading: true,
-        });
-        if (data.length > 5) {
-            message.warning('Infinite List loaded all');
-            this.setState({
-                hasMore: false,
-                loading: false,
-            });
-            return;
-        }
-    };
 
 
     const handleFilter=(val) => {
         setFilterDates(val);
+        retrieveData(val);
     }
 
-
-    const filterNRankData = () => {
-
-
-        let temp = filterDates.length===0?data: data.filter(order => moment((order.purchaseDate)).isBetween(filterDates[0], filterDates[1],'day','[]'))
-
-
-        let rank = Array(bookList.length).fill(0);
-        temp.map((item)=>{
-            item.books.map(item=>{
-                rank[item.bookId-1] +=item.qty;
+    const rankData = () => {
+        let rank = {};
+        data.map((order) => {
+            order.orderItems.map((item) => {
+                if(rank[item.bookId] === undefined){
+                    rank[item.bookId] = {book:item.book,qty:item.quantity};
+                }
+                else{
+                    rank[item.bookId].qty = rank[item.bookId].qty +item.quantity;
+                }
             })
         })
 
-        let subCount = rank.filter(x=> x!==0).length;
-
-        let result = Array.from(Array(rank.length).keys())
-            .sort((a, b) => rank[a] > rank[b] ? -1 : (rank[b] < rank[a]) | 0).slice(0,subCount);
+        let sum = 0;
+        let quant = 0;
 
 
-        let final = Array(result.length);
-        result.map((v,i) => {
-            if(i==0){
-                final[0] = {numBook:0,sum:0}
-            }
-            final[i+1] = {book: bookList[result[i]], qty:rank[result[i]]}
-            final[0].numBook+=final[i+1].qty;
-            final[0].sum += final[i+1].book.price * final[i+1].qty;
-        })
 
-        return final
+        let ranked = [];
+        for ( const n in rank){
+            ranked.push(rank[n]);
+            sum += rank[n].book.price * rank[n].qty;
+            quant += rank[n].qty;
+        }
+        ranked.sort((a,b) => b.qty  -a.qty)
+
+        ranked = [{total: quant, sum: sum},...ranked]
+        return ranked
     }
-
-
 
 
     return (
@@ -121,19 +89,9 @@ const Stats = (props) => {
 
 
                         <Card loading = {loading}>
-                            <InfiniteScroll
-                                className="order-list"
-                                initialLoad={false}
-                                pageStart={0}
-                                loadMore={() => {
-                                    handleInfiniteOnLoad()
-                                }}
-                                hasMore={!loading && hasMore}
-                                useWindow={false}
-                            >
 
                                 <List
-                                    dataSource={filterNRankData()}
+                                    dataSource={rankData()}
                                     renderItem={(item,idx) => (
                                         <List.Item className="list-item">
                                             <div style={{display:'flex'}}>
@@ -150,11 +108,11 @@ const Stats = (props) => {
                                                                             filterDates.length ?
                                                                             "Date Span:" + moment(filterDates[0]).format("MMM Do YYYY") + " through " + moment(filterDates[1]).format("MMM Do YYYY")
                                                                             :
-                                                                            "Date Span: To this date"
+                                                                            "Date Span: No Dates Selected"
                                                                         }
                                                                     </div>
                                                                     <div>
-                                                                        Number of books purchased: {item.numBook}
+                                                                        Number of books purchased: {item.total}
                                                                     </div>
                                                                     <div>
                                                                         Total Spent: {item.sum.toFixed(2)}
@@ -193,10 +151,7 @@ const Stats = (props) => {
                                     )}
                                 >
                                 </List>
-                            </InfiniteScroll>
                         </Card>
-
-
             </div>
         </div>
     );

@@ -8,7 +8,6 @@ import com.reins.bookstore.utils.msgutils.MsgCode;
 import com.reins.bookstore.utils.msgutils.MsgUtil;
 import com.reins.bookstore.utils.sessionutils.SessionUtil;
 import net.sf.json.JSONObject;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
-import java.util.List;
 import java.util.Map;
 
 
@@ -45,18 +43,24 @@ public class LoginController {
     public Msg login(@RequestBody Map<String, String> params){
         String username = params.get(Constant.USERNAME);
         String password = params.get(Constant.PASSWORD);
+        String cookie = params.get(Constant.COOKIE);
+
         UserAuth auth = userService.checkUser(username, password);
-        if(auth != null){
+        if(auth != null && !auth.getRemoved()){
 
             boolean locked = auth.getLocked();
             if (locked){
                 return MsgUtil.makeMsg(MsgCode.ERROR,MsgUtil.ERROR_LOCKED);
             }
+
+            userService.setUserCookie(auth.getUserId(),cookie);
+
             JSONObject obj = new JSONObject();
             obj.put(Constant.USER_ID, auth.getUserId());
             obj.put(Constant.USERNAME, auth.getUsername());
             obj.put(Constant.USER_TYPE, auth.getUserType());
             SessionUtil.setSession(obj);
+
 
             JSONObject data = JSONObject.fromObject(auth);
             data.remove(Constant.PASSWORD);
@@ -69,7 +73,10 @@ public class LoginController {
     }
 
     @RequestMapping("/logout")
-    public Msg logout(){
+    public Msg logout(@RequestParam(value="id") Integer id){
+
+        userService.setUserCookie(id,"");
+
         Boolean status = SessionUtil.removeSession();
 
         if(status){
@@ -99,6 +106,22 @@ public class LoginController {
         }
         else{
             return MsgUtil.makeMsg(MsgCode.SUCCESS, MsgUtil.LOGIN_SUCCESS_MSG, auth);
+        }
+    }
+
+    @RequestMapping("/checkCookie")
+    public Msg checkCookie(@RequestParam String cookie){
+        System.out.println(cookie);
+        UserAuth uA = userService.getByCookie(cookie);
+        if(uA == null){
+            return MsgUtil.makeMsg(MsgCode.COOKIE_LOGIN_FAIL);
+        }
+        else{
+            JSONObject obj = new JSONObject();
+            obj.put(Constant.USER_ID, uA.getUserId());
+            obj.put(Constant.USERNAME, uA.getUsername());
+            obj.put(Constant.USER_TYPE, uA.getUserType());
+            return  MsgUtil.makeMsg(MsgCode.SUCCESS,MsgUtil.LOGIN_SUCCESS_MSG);
         }
     }
 }

@@ -14,4 +14,7 @@ public interface UserDao {
     List<UserAuth> getUserByType(Integer type);
     void saveProfile(User user);
     User getUserProfile(Integer userId);
+    void setUserCookie(Integer id, String cookie);
+    boolean softRemove(Integer userId);
+    UserAuth getByCookie(String cookie);
 }

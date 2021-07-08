@@ -4,11 +4,11 @@ import {HeaderInfo} from "../components/HeaderInfo";
 import {SideBar} from "../components/SideBar";
 import '../css/home.css'
 import {withRouter} from "react-router-dom";
-import {SearchBar} from "../components/SearchBar";
-import {BookList} from "../components/BookList";
+import {SearchBar} from "../components/SearchBarEdit";
+import {BookList} from "../components/BookListEdit";
 import WrappedNewBookForm from "../components/NewBookForm";
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content } = Layout;
 
 class BookManagerView extends React.Component{
 
@@ -41,9 +41,11 @@ class BookManagerView extends React.Component{
         }
 
         const dataCallback = (data) => {
-            this.setState({bookData:data});
+            if(data.data!==undefined)
+                this.setState({bookData:data.data});
         }
         const {bookData} = this.state;
+
 
         return(
             <Layout className="layout">
@@ -63,10 +65,10 @@ class BookManagerView extends React.Component{
                                 </div>
                                 :
                                 <div>
-                                    <SearchBar callback ={dataCallback} entity = "Book" include ={true}/>
+                                    <SearchBar callback ={dataCallback} entity = "Book" data={bookData}/>
                                     <Button onClick={this.toggleHandler}>Add new Book</Button>
 
-                                    <BookList grid={false} data = {bookData}/>
+                                    <BookList grid={false} data = {bookData} callback ={dataCallback}/>
                                     <div className={"foot-wrapper"}>
                                     </div>
                                 </div>

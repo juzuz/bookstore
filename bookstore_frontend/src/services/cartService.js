@@ -1,5 +1,5 @@
 import config from 'config';
-import {postRequest, postRequest_v2} from "../utils/ajax";
+import {postRequest_v2} from "../utils/ajax";
 
 
 export const getCart = (id, callback) => {

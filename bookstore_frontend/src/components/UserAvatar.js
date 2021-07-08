@@ -2,15 +2,11 @@ import React from 'react';
 import { Avatar, Dropdown, Menu} from 'antd';
 import '../css/index.css'
 import * as userService from '../services/userService'
-import config from 'config'
 import {history} from "../utils/history";
 
 export class UserAvatar extends React.Component {
 
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {imgUrl:""};
-    // }
+
 
 
     render() {

@@ -25,6 +25,9 @@ import java.math.BigDecimal;
 @JsonIgnoreProperties(value = {"handler","hibernateLazyInitializer","fieldHandler"})
 //@IdClass(AddressId.class)
 public class Address {
+    @Id
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
     private Integer addressId;
     private Integer userId;
     private String address;
@@ -39,28 +42,8 @@ public class Address {
         this.phone=phone;
         this.address=address;
     }
-    @Id
-    @GeneratedValue(generator = "increment")
-    @GenericGenerator(name = "increment", strategy = "increment")
+
     public Integer getAddressId(){return addressId;}
     private void setAddressId(Integer add){this.addressId = add;}
-
-    public Integer getUserId(){
-        return userId;
-    }
-    private void setUserId(Integer id){
-        this.userId = id;
-    }
-    public String getAddress() {return address;}
-    public void setAddress(String add){ this.address = add;}
-
-    public String getName(){return name;}
-    public void setName(String name){this.name=name;}
-
-    public String getPhone(){return phone;}
-    public void setPhone(String num){this.phone=num;}
-
-
-
 
 }

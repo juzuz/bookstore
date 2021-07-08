@@ -1,26 +1,26 @@
 package com.reins.bookstore.controller;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.reins.bookstore.entity.Address;
-import com.reins.bookstore.entity.Book;
-import com.reins.bookstore.entity.UserAuth;
-import com.reins.bookstore.entity.User;
+import com.reins.bookstore.entity.*;
 import com.reins.bookstore.service.CartService;
+import com.reins.bookstore.service.OrderService;
 import com.reins.bookstore.service.UserService;
-import com.sun.istack.Nullable;
-import net.sf.json.JSON;
-import net.sf.json.JSONNull;
+import com.reins.bookstore.utils.msgutils.Msg;
+import com.reins.bookstore.utils.msgutils.MsgCode;
+import com.reins.bookstore.utils.msgutils.MsgUtil;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.Embeddable;
 import javax.transaction.Transactional;
-import java.io.Serializable;
 import java.util.*;
+
+
 
 /**
  * @ClassName UserController
@@ -34,7 +34,7 @@ public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
-    private CartService cartService;
+    private OrderService orderService;
 
 
     @RequestMapping("/checkUser")
@@ -76,20 +76,34 @@ public class UserController {
         return userInfos;
     }
 
+    @RequestMapping("/deleteUser")
+    public Msg deleteUser(@RequestParam Integer id){
+
+        boolean status = userService.softRemove(id);
+
+        if (status){
+            return MsgUtil.makeMsg(MsgCode.SUCCESS, MsgUtil.SUCCESS_MSG);
+        }
+        else{
+            return MsgUtil.makeMsg(MsgCode.ERROR, MsgUtil.ERROR_MSG);
+
+        }
+    }
 
     @RequestMapping("/getCart")
     public List<JSONObject> getCart(@RequestParam("userId") Integer id) {
         List<JSONObject> data = new ArrayList<>();
         User user = userService.getUser(id);
-        Set<Book> booksInCart = user.getInCart();
-        for(Book tmp:booksInCart){
-            int q = cartService.getCartItem(id,tmp.getId()).getQuantity();
-            JSONObject obj = new JSONObject();
-            obj.put("book",tmp);
-            obj.put("amount",q);
-            data.add(obj);
 
+        Set<Cart> userCart = user.getUserCart();
+        for (Cart tCart: userCart){
+            Book book = tCart.getBook();
+            JSONObject obj = new JSONObject();
+            obj.put("book",book);
+            obj.put("amount",tCart.getQuantity());
+            data.add(obj);
         }
+
         return data;
     }
 
@@ -100,7 +114,7 @@ public class UserController {
 
     @RequestMapping("/getAddress")
     public Set<Address> getAddress(@RequestParam("userId") Integer userId){
-        return userService.getAddress(userId);
+        return userService.getAllUserAddress(userId);
     }
 
     @RequestMapping("/addAddress")
@@ -115,8 +129,37 @@ public class UserController {
     @Transactional
     @RequestMapping("/removeAddress")
     public boolean removeAddress(@RequestParam("addressId") Integer addressId){
+        List<Orders> orderWithAdd = orderService.findAllOrdersWithAddress(addressId);
+        for (Orders o: orderWithAdd){
+            o.setAddressBackup(o.getAddress().getName() + "@" + o.getAddress().getPhone()  + "@" +  o.getAddress().getAddress());
+            o.setAddressId(null);
+            o.setAddress(null);
+        }
         userService.removeAddress(addressId);
         return true;
+    }
+
+    @RequestMapping("/getOrders")
+    public Page<Orders> getOrders(@RequestParam(value = "id") Integer userId,Optional<Integer> page){
+
+
+
+        List<Orders> orders = userService.getUser(userId).getUserOrders();
+        int size = 5;
+        PageRequest pageRequest = PageRequest.of(page.orElse(0), size);
+        int total = orders.size();
+        int start = Math.toIntExact(pageRequest.getOffset());
+        int end = Math.min((start + pageRequest.getPageSize()), total);
+        List<Orders> output = new ArrayList<>();
+        if (start <= end) {
+            output = orders.subList(start, end);
+        }
+        return new PageImpl<>(
+                output,
+                pageRequest,
+                total
+        );
+
     }
 }
 

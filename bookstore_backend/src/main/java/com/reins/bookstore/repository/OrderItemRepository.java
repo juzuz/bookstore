@@ -5,6 +5,7 @@ import com.reins.bookstore.entity.OrderItems;
 import com.reins.bookstore.entity.Orders;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface OrderItemRepository extends JpaRepository<OrderItems, OrderItemId> {
+public interface OrderItemRepository extends JpaRepository<OrderItems, Integer> {
+    OrderItems findByOrderIdAndBookId(Integer orderId,Integer bookId);
 
 }

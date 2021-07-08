@@ -1,5 +1,5 @@
 import React from 'react';
-import {Layout, Carousel} from 'antd'
+import {Layout} from 'antd'
 import {HeaderInfo} from "../components/HeaderInfo";
 import {SideBar} from "../components/SideBar";
 import '../css/bookDetail.css'
@@ -9,17 +9,13 @@ import {withRouter} from "react-router-dom";
 import {getBook} from "../services/bookService";
 import {BookDetail} from "../components/BookDetail";
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content } = Layout;
 
 class BookView extends React.Component{
 
     constructor(props) {
         super(props);
-
         this.state = {books:null};
-
-
-
     }
 
     componentDidMount(){

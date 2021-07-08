@@ -3,7 +3,6 @@ import {Card, Button, Checkbox, Select, InputNumber, message} from 'antd';
 import '../css/cart.css';
 import {getCart, updateQuantity,deleteItem} from "../services/cartService";
 import {Link} from "react-router-dom";
-import {format} from "date-fns";
 import {history} from "../utils/history";
 
 const Cart = () => {
@@ -23,6 +22,7 @@ const Cart = () => {
     const [loading,setLoading] = useState(false);
 
     const {Option} = Select;
+
 
     //Calculate the sum of the books that are checked
     // eslint-disable-next-line no-undef,react-hooks/exhaustive-deps
@@ -61,7 +61,6 @@ const Cart = () => {
                 setChecked(new Array(data.length).fill(true))
             else
                 setChecked(check);
-
             setCartItems(data);
             calcSum(data);
             setInputToggle(false)
@@ -170,7 +169,8 @@ const Cart = () => {
                     bookId:bookInfo.book.id,
                     quantity: bookInfo.amount,
                     price: bookInfo.book.price,
-                    title: bookInfo.book.name
+                    title: bookInfo.book.name,
+                    fromCart: true,
                 });
             }
         }

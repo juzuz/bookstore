@@ -1,58 +1,33 @@
 import React, {useEffect, useState} from 'react';
-import {List, message, DatePicker, Button,Card} from 'antd';
-import {getBooks} from '../services/bookService';
-import {getOrders} from "../services/orderService";
+import {List, DatePicker, Button,Card} from 'antd';
+import { getOrdersByDate} from "../services/orderService";
 import "../css/orderManagement.css";
 import "../css/order.css"
-import {format} from "date-fns";
-import InfiniteScroll from 'react-infinite-scroller';
 import moment from 'moment';
-import {getUsers} from "../services/userService";
 
-
-
-function DateFormat (date){
-    let oldDate = new Date(date);
-    return format(oldDate,' MMMM do, yyyy');
-
-}
 
 
 
 const Stats = (props) => {
 
-    const [userList,setUserList] = useState([]);
-    const [allData,setAllData] = useState([]);
-    const [bookList,setBookList] = useState([]);
+    const [data,setData] = useState([]);
     const [purchaseSalesToggle,setPurchaseSalesToggle] = useState(true);
     const [loading,setLoading] = useState(true);
-    const [hasMore,setHasMore] = useState(true);
     const [filterDates,setFilterDates] = useState([]);
     const {RangePicker} = DatePicker;
 
-    const retrieveData = () => {
-        const {userId,userType} = JSON.parse(localStorage.getItem("user"));
+    const retrieveData = (val) => {
 
-
-        const orderCallback = (values) => {
-            setAllData(values)
-        }
-        const bookCallback = (values) => {
-            setBookList(values)
-        }
-        const userCallback = (values) => {
-            setUserList(values)
+        const callback = (values) => {
+            setData(values)
         }
 
-        getBooks({include:true},bookCallback)
-        getOrders({id:0},orderCallback);
-        getUsers({type:-1},userCallback)
-
+        getOrdersByDate({dates:val},callback);
     }
 
     useEffect(()=>{
         setLoading(true)
-        retrieveData();
+        retrieveData(filterDates);
         const timer = setTimeout(() => {
             setLoading(false);
         }, 1000);
@@ -60,86 +35,77 @@ const Stats = (props) => {
     },[])
 
 
-    const handleInfiniteOnLoad = () => {
-        this.setState({
-            loading: true,
-        });
-        if (allData.length > 5) {
-            message.warning('Infinite List loaded all');
-            this.setState({
-                hasMore: false,
-                loading: false,
-            });
-            return;
-        }
-    };
-
-
     const handleFilter=(val) => {
         setFilterDates(val);
+        retrieveData(val);
     }
 
     const handleClick = () => {
         setPurchaseSalesToggle(!purchaseSalesToggle)
     }
 
-    const filterNRankData = () => {
-        let temp = filterDates.length===0?allData: allData.filter(order => moment((order.purchaseDate)).isBetween(filterDates[0], filterDates[1],'day','[]'))
-
-        let rank = purchaseSalesToggle?Array(bookList.length).fill(0):Array(userList.length).fill(0);
-        purchaseSalesToggle?
-            (
-                temp.map((item)=>{
-                    item.books.map(item=>{
-                        rank[item.bookId-1] +=item.qty;
-                    })
-                })
-            )
-            :
-            (
-                temp.map((item)=>{
-                    let userId = item.buyerId;
-                    item.books.map(item=>{
-                        rank[userId-1] +=(item.qty * item.price) ;
-                    })
-                })
-            )
-
-
-        let result = purchaseSalesToggle?
-            (
-                Array.from(Array(rank.length).keys())
-                    .sort((a, b) => rank[a] > rank[b] ? -1 : (rank[b] < rank[a]) | 0)
-            )
-            :
-            (
-                Array.from(Array(rank.length).keys())
-                    .sort((a, b) => rank[a] > rank[b] ? -1 : (rank[b] < rank[a]) | 0)
-            )
-
-        let final = Array(result.length);
-        purchaseSalesToggle?
-            (
-                result.map((v,i) => {
-                    if(i==0){
-                        final[0] = {numBook:0,sum:0}
+    const rankData = () => {
+        let rank = {};
+        purchaseSalesToggle?(
+        // Returns book hot ranking in form of Object {book: {info on the book}, qty: number of purchases}
+            data.map((order) => {
+                order.orderItems.map((item) => {
+                    if(rank[item.bookId] === undefined){
+                        rank[item.bookId] = {book:item.book,qty:item.quantity};
                     }
-                    final[i+1] = {book: bookList[result[i]], qty:rank[result[i]]}
-                    final[0].numBook+=final[i+1].qty;
-                    final[0].sum += final[i+1].book.price * final[i+1].qty;
+                    else{
+                        rank[item.bookId].qty = rank[item.bookId].qty +item.quantity;
+                    }
                 })
-            )
+            }))
             :
             (
-                result.map((v,i) => {
-                    if(i==0){
-                        final[0] = {totalEarning:rank.reduce((a, b) => a + b, 0)}
-                    }
-                    final[i+1] = {user: userList[result[i]], spent: rank[result[i]]}
-                })
-            )
-        return final
+                // Returns user Ranking in form of object {user: username of buyer, spent: totalSpending}
+                data.map(order=>{
+                if(rank[order.buyer] === undefined){
+                    let sum = 0;
+                    order.orderItems.map(item=>{
+                        sum += item.book.price * item.quantity;
+                    })
+                    rank[order.buyer] = sum;
+                }
+                else{
+                    let sum = 0;
+                    order.orderItems.map(item=>{
+                        sum += item.book.price * item.quantity;
+                    })
+                    rank[order.buyer] += sum;
+                }
+            }))
+
+        let ranked = [];
+
+        // Idx 0 of list will always be the summary of the ranking.
+        if(purchaseSalesToggle) {
+            let sum = 0;
+            let quant = 0;
+            for ( const n in rank){
+                ranked.push(rank[n]);
+                sum += rank[n].book.price * rank[n].qty;
+                quant += rank[n].qty;
+            }
+            ranked.sort((a,b) => b.qty  -a.qty)
+            ranked = [{total: quant, sum: sum},...ranked]
+        }
+        else{
+            let totalEarning = 0;
+
+            for( const n in rank){
+                ranked.push({user:n, spent:rank[n]});
+                totalEarning+=rank[n];
+            }
+            ranked.sort((a,b) => b.spent - a.spent)
+            ranked = [{totalEarning:totalEarning},...ranked]
+        }
+
+        return ranked;
     }
+
 
 
 
@@ -160,26 +126,16 @@ const Stats = (props) => {
 
 
                 <Card loading = {loading}>
-                    <InfiniteScroll
-                        className="order-list"
-                        initialLoad={false}
-                        pageStart={0}
-                        loadMore={() => {
-                            handleInfiniteOnLoad()
-                        }}
-                        hasMore={!loading && hasMore}
-                        useWindow={false}
-                    >
 
                         <List
-                            dataSource={filterNRankData()}
+                            dataSource={rankData()}
                             renderItem={(item,idx) => (
                                 <List.Item className="list-item">
                                     {
                                         purchaseSalesToggle?
                                             <div style={{display:'flex'}}>
                                                 {
-                                                    idx == 0?
+                                                    idx === 0?
                                                         <List.Item.Meta
                                                             title = {"Activity Summary"}
                                                             description={
@@ -190,21 +146,21 @@ const Stats = (props) => {
                                                                             filterDates.length?
                                                                                 "Date Span:" + moment(filterDates[0]).format("MMM Do YYYY") + " through " + moment(filterDates[1]).format("MMM Do YYYY")
                                                                                 :
-                                                                                "Date Span: To this date"
+                                                                                "Date Span: No Dates Selected"
                                                                         }
                                                                     </div>
                                                                     <div>
-                                                                        Number of books purchased: {item.numBook}
+                                                                        Number of books purchased: {item.total}
                                                                     </div>
                                                                     <div>
-                                                                        Total Spent: {item.sum.toFixed(2)}
+                                                                        Total Spent: {"$ " + item.sum.toFixed(2)}
                                                                     </div>
                                                                 </div>
                                                             }
                                                         />
                                                     :
                                                     <div style={{display:'flex'}}>
-                                                        <div>
+                                                        <div style ={{fontSize:"20px", paddingRight:"10px"}}>
                                                             {"#" + (idx)}
                                                         </div>
                                                         <List.Item.Meta
@@ -229,7 +185,7 @@ const Stats = (props) => {
                                             :
                                             <div style={{display:'flex'}}>
                                                 {
-                                                    idx == 0?
+                                                    idx === 0?
                                                         <List.Item.Meta
                                                             title = {"User Summary"}
                                                             description={
@@ -240,11 +196,11 @@ const Stats = (props) => {
                                                                             filterDates.length?
                                                                                 "Date Span:" + moment(filterDates[0]).format("MMM Do YYYY") + " through " + moment(filterDates[1]).format("MMM Do YYYY")
                                                                                 :
-                                                                                "Date Span: To this date"
+                                                                                "Date Span: No Dates Selected"
                                                                         }
                                                                     </div>
                                                                     <div>
-                                                                        Total Sales: {item.totalEarning}
+                                                                        Total Sales: {"$ " + item.totalEarning.toFixed(2) }
                                                                     </div>
 
                                                                 </div>
@@ -252,13 +208,13 @@ const Stats = (props) => {
                                                         />
                                                         :
                                                         <div style={{display:'flex'}}>
-                                                            <div>
+                                                            <div style ={{fontSize:"20px", paddingRight:"10px"}}>
                                                                 {"#" + (idx)}
                                                             </div>
                                                             <List.Item.Meta
-                                                                title = {item.user.username}
+                                                                title = {item.user}
                                                                 description={<div>
-                                                                    {item.spent}
+                                                                    {item.spent.toFixed(2)}
                                                                 </div>}
                                                             />
                                                         </div>
@@ -270,7 +226,6 @@ const Stats = (props) => {
                             )}
                         >
                         </List>
-                    </InfiniteScroll>
                 </Card>
             </div>
         </div>

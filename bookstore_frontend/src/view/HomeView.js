@@ -1,14 +1,14 @@
 import React from 'react';
-import {Layout, Carousel} from 'antd'
+import {Layout} from 'antd'
 import {HeaderInfo} from "../components/HeaderInfo";
 import {SideBar} from "../components/SideBar";
 import '../css/home.css'
 import {withRouter} from "react-router-dom";
 import {BookCarousel} from "../components/BookCarousel";
-import {SearchBar} from "../components/SearchBar";
-import {BookList} from "../components/BookList";
+import {SearchBar} from "../components/SearchBarEdit";
+import {BookList} from "../components/BookListEdit";
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content } = Layout;
 
 class HomeView extends React.Component{
 
@@ -19,16 +19,24 @@ class HomeView extends React.Component{
         }
     }
 
-    componentDidMount(){
-        let user = localStorage.getItem("user");
-        this.setState({user:user});
-    }
+
 
     render(){
+
         const callback = (data) => {
-            this.setState({bookData:data});
+            if(data.data !== undefined)
+                this.setState({bookData:data.data});
         }
         const {bookData} = this.state;
+
+
+        // Each Component, Search and BookList gets the first page of the books.
+        // The search bar only autocompletes books on the page.
+        // When the search button is clicked, Books that contain the query is returned in pageable objects.
+        // Then the callback in searchbar sets the homeview data to the new pageable data.
+        // This data is sent down as a prop for booklist and displayed.
+        // When a new page is chosen. The page is retrieved and by the call back, the home view state is changed.
+        // This changed value will pass down to the search bar, thus allowing search within the same page.
         return(
             <Layout className="layout">
                 <Header>
@@ -38,15 +46,16 @@ class HomeView extends React.Component{
                     <SideBar />
                     <Content style={{ padding: '0 50px' }}>
                         <div className="home-content">
-                            <SearchBar callback ={callback} entity = "Book" include={false}/>
+                            <SearchBar entity = "Book" data = {bookData} callback={callback}/>
                             <BookCarousel />
-                            <BookList grid = {true}  data = {bookData} include ={false}/>
+                            <BookList grid = {true}  data = {bookData} callback = {callback} />
                             <div className={"foot-wrapper"}>
                             </div>
                         </div>
                     </Content>
                 </Layout>
             </Layout>
+
         );
     }
 }

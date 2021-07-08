@@ -24,6 +24,7 @@ public class MsgUtil {
     public static final String NOT_LOGGED_IN_ERROR_MSG = "登录失效，请重新登录！";
     public static final String ALREADY_EXISTS_ERROR = "该书已在购物车! ";
     public static final String USERNAME_EXISTS_ERROR = "用户名已存在!";
+    public static final String COOKIE_LOGIN_FAIL = "自动登录失败";
 
 
 

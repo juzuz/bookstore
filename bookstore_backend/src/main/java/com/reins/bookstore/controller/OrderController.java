@@ -8,7 +8,11 @@ import com.reins.bookstore.service.CartService;
 import com.reins.bookstore.service.OrderService;
 import com.reins.bookstore.entity.Orders;
 import net.sf.json.JSONObject;
+import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import com.reins.bookstore.compositeKey.OrderModel;
 
@@ -17,12 +21,15 @@ import com.reins.bookstore.utils.msgutils.MsgCode;
 import com.reins.bookstore.utils.msgutils.MsgUtil;
 
 import javax.transaction.Transactional;
-import javax.validation.Valid;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
+class OrderIdComparator implements Comparator<Orders> {
 
+    @Override
+    public int compare(Orders o1, Orders o2) {
+        return ( o2.getOrderId() - o1.getOrderId());
+    }
+}
 /**
  * @ClassName BookController
  * @Description TODO
@@ -44,61 +51,77 @@ public class OrderController {
 
     @Transactional
     @RequestMapping("/submitOrders")
-    public Msg submitOrders(@Valid @RequestBody List<OrderModel> data){
-        int userId = data.get(0).userId;
+    public Msg submitOrders(@RequestBody List<OrderModel> data){
+
+        Integer userId = data.get(0).userId;
         Address address = data.get(0).address;
         Date cur = new Date();
-        Orders newOrder = orderService.createOrder(userId,cur,address.getName(),address.getAddress(), address.getPhone());
+        // Creates a new orderId. Increment by 1 and retrieve
+        Orders newOrder = orderService.createOrder(userId,cur,address.getAddressId());
         Integer orderId = newOrder.getOrderId();
 
-        List<OrderItems> items = new ArrayList<>();
-        List<CartId> cartItems = new ArrayList<>();
-
         for (OrderModel o:data){
+            // Read through the orders. Each Item has the same orderId.
             OrderItems item = new OrderItems(orderId,o.getBookId(),o.getQuantity());
-            CartId cartItem = new CartId(o.getId(),o.getBookId());
-            items.add(item);
-            cartItems.add(cartItem);
+            orderService.addItemToOrder(item);
+
+            // If this order was submitted from the cart, remove the corresponding book from the cart.
+            if(o.getFromCart()){
+                cartService.deleteItem(o.getId(),o.getBookId());
+            }
+            //Reduce the inventory
+            bookService.reduceInventory(item);
+
         }
-        orderService.addItemsToOrder(items);
-        cartService.orderSubmitted(cartItems);
-        bookService.reduceInventory(items);
         return MsgUtil.makeMsg(MsgCode.SUCCESS, MsgUtil.SUCCESS_MSG);
     }
-    @RequestMapping("/getOrders")
-    public List<JSONObject> getOrders(@RequestParam(value = "id", required = false) Integer userId){
 
-        List<Orders> orders = orderService.getOrders(userId);
-        List<JSONObject> orderData = new ArrayList<>();
-        for(Orders o:orders){
-            Integer orderId = o.getOrderId();
-            JSONObject orderInfo = new JSONObject();
-            orderInfo.put("orderId", orderId);
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            orderInfo.put("purchaseDate",dateFormat.format(o.getOrderDate()));
-            orderInfo.put("buyerId",o.getBuyer().getUserId());
-            orderInfo.put("buyerUsername",o.getBuyer().getUsername());
-            orderInfo.put("receiver",o.getName());
-            orderInfo.put("shipping",o.getAddress());
-            orderInfo.put("phone",o.getPhone());
-            Set<Book> items = o.getOrderItems();
+    @RequestMapping("/getOrdersByUserAndDate")
+    public List<Orders> getOrdersByUserAndDate(@RequestParam(value ="id") Integer userId, @RequestParam(value="dates") List<Date> dates){
 
-            List<JSONObject> books = new ArrayList<>();
-            for (Book b:items){
-                JSONObject bookInfo = new JSONObject();
-                Integer bookId = b.getId();
-                bookInfo.put("bookId",bookId);
-                bookInfo.put("image",b.getImage());
-                bookInfo.put("title",b.getName());
-                bookInfo.put("price",b.getPrice());
-                bookInfo.put("qty",orderService.getOrderQuantity(orderId,bookId));
-                books.add(bookInfo);
-            }
-            orderInfo.put("books",books);
-            orderData.add(orderInfo);
-        }
-        return orderData;
+       List<Orders> filtered = orderService.getOrdersByUserAndDate(userId,dates);
+        return filtered;
+    }
 
+    @RequestMapping("/getOrdersByDate")
+    public List<Orders> getOrdersByDate(@RequestParam(value="dates") List<Date> dates){
+     List<Orders> filter = orderService.getOrdersByDate(dates);
+     return filter;
+    }
+//
+//    @RequestMapping("/getAllOrders")
+//    public Page<Orders> getAllOrders(Optional<Integer> page){
+//
+//        List<Orders> orders = orderService.getAllOrders();
+//        System.out.println(orders.get(0).getOrderId());
+//        System.out.println("AFTER SPRT");
+//        Collections.sort(orders,new OrderIdComparator());
+//        System.out.println(orders.get(0).getOrderId());
+//        PageRequest pageRequest = PageRequest.of(page.orElse(0), 5);
+//        int total = orders.size();
+//        int start = Math.toIntExact(pageRequest.getOffset());
+//        int end = Math.min((start + pageRequest.getPageSize()), total);
+//        List<Orders> output = new ArrayList<>();
+//        if (start <= end) {
+//            output = orders.subList(start, end);
+//        }
+//        return new PageImpl<>(
+//                output,
+//                pageRequest,
+//                total
+//        );
+//    }
+
+    @RequestMapping("/getOrdersByQueryAndDateAndUserAndPage")
+    public Page<Orders> getOrdersByQueryAndDateAndUserAndPage(@RequestParam Integer id, @RequestParam Optional<String> query,@RequestParam List<Date> filterDates, @RequestParam Optional<Integer> page ){
+        return orderService.getOrdersByQueryAndDateAndUserAndPage(id,query.orElse(""),filterDates,page);
+    }
+
+    @Transactional
+    @RequestMapping("/deleteOrder")
+    public Msg deleteOrder(@RequestParam Integer id){
+        boolean status = orderService.deleteOrder(id);
+        return MsgUtil.makeMsg(MsgCode.SUCCESS, MsgUtil.SUCCESS_MSG);
     }
 
 }

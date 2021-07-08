@@ -1,17 +1,12 @@
 package com.reins.bookstore.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.ManyToAny;
+import org.hibernate.annotations.Where;
 
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @ClassName Book
@@ -23,12 +18,14 @@ import java.util.List;
 
 
 
-@Data
+// @Where tells us to only consider rows where the removed == false.
 @Entity
+@Data
 @Table(name = "BOOK")
-@JsonIgnoreProperties(value = {"handler","hibernateLazyInitializer","fieldHandler"})
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,property = "id")
 public class Book {
+    @Id
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name="increment", strategy = "increment")
     @Column(name = "id")
     private Integer id;
     @Column(name="isbn")
@@ -53,64 +50,6 @@ public class Book {
 
     public Book() {}
 
-    @Id
-    @GeneratedValue(generator = "increment")
-    @GenericGenerator(name="increment", strategy = "increment")
-    public Integer getId(){
-        return id;
-    }
-    private void setId(Integer id){
-        this.id = id;
-    }
-
-    public String getIsbn(){
-        return isbn;
-    }
-    public void setIsbn(String isbn){
-        this.isbn = isbn;
-    }
-
-    public String getName(){
-        return name;
-    }
-    public void setName(String name){
-        this.name = name;
-    }
-
-    public String getType(){
-        return type;
-    }
-    public void setType(String type){
-        this.type = type;
-    }
-
-    public String getAuthor(){
-        return author;
-    }
-    public void setAuthor(String author){
-        this.author = author;
-    }
-
-    public BigDecimal getPrice(){
-        return price;
-    }
-    public void setPrice(BigDecimal price){
-        this.price = price;
-    }
-
-    public String getDescription(){
-        return description;
-    }
-    public void setDescription(String description){
-        this.description = description;
-    }
-
-    public Integer getInventory(){
-        return inventory;
-    }
-    public void setInventory(Integer inventory){
-        this.inventory = inventory;
-    }
 
     public boolean getRemoved(){return removed;}
     public void setRemoved(boolean removed){this.removed = removed;}

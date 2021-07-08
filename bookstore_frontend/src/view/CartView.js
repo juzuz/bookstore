@@ -1,24 +1,15 @@
 import React from 'react';
-import {Layout, Carousel} from 'antd'
+import {Layout} from 'antd'
 import {HeaderInfo} from "../components/HeaderInfo";
 import {SideBar} from "../components/SideBar";
 import '../css/home.css'
 import {withRouter} from "react-router-dom";
 import Cart from "../components/Cart";
-// import {BookCarousel} from "../components/BookCarousel";
-import {SearchBar} from "../components/SearchBar";
-import {BookList} from "../components/BookList";
-import {BookCarousel} from "../components/BookCarousel";
-import { Card } from 'antd';
 
-const { Header, Content, Footer,  } = Layout;
+const { Header, Content  } = Layout;
 
 class CartView extends React.Component{
 
-    constructor(props) {
-        super(props);
-
-    }
 
     componentDidMount(){
         let user = localStorage.getItem("user");

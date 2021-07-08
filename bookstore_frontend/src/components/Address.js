@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {getAddress,removeAddress} from "../services/userService";
-import {Card} from "antd";
 import '../css/address.css';
 import {PlusOutlined } from "@ant-design/icons";
 import {history} from "../utils/history";
@@ -24,7 +23,6 @@ const Address = () => {
 
     const handleNewAddress = (e) => {
         e.preventDefault();
-        let user = JSON.parse(localStorage.getItem('user'));
         history.push('/newAddressView')
     }
 

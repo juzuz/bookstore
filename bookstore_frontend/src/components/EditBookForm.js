@@ -33,7 +33,6 @@ class EditForm extends React.Component {
     };
 
     posNum = (rule,value,callback) => {
-        const {form} = this.props;
         if(value >= 0){
             callback()
         }

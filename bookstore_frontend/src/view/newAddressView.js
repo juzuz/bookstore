@@ -1,12 +1,12 @@
 import React from 'react';
-import {Layout, Carousel} from 'antd'
+import {Layout} from 'antd'
 import {HeaderInfo} from "../components/HeaderInfo";
 import {SideBar} from "../components/SideBar";
 import '../css/home.css'
 import {withRouter} from "react-router-dom";
 import AddAddress from "../components/AddAddress";
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content } = Layout;
 
 class newAddressView extends React.Component{
 

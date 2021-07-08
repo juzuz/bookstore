@@ -20,7 +20,7 @@ import java.io.Serializable;
 @Data
 @Entity
 @Table(name = "CART")
-@JsonIgnoreProperties(value = {"handler","hibernateLazyInitializer","fieldHandler"})
+//@JsonIgnoreProperties(value = {"handler","hibernateLazyInitializer","fieldHandler"})
 @IdClass(CartId.class)
 public class Cart implements Serializable {
     @Id
@@ -30,6 +30,9 @@ public class Cart implements Serializable {
 
     private int quantity;
 
+    @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.PERSIST})
+    @JoinColumn(name="bookId",referencedColumnName = "id",insertable = false,updatable = false)
+    private Book book;
 
     public Cart(){};
 
@@ -40,24 +43,28 @@ public class Cart implements Serializable {
     }
 
 
-    public Integer getUserId(){
-        return userId;
-    }
-    private void setUserId(Integer id){
-        this.userId = id;
-    }
+//    public Integer getUserId(){
+//        return userId;
+//    }
+//    private void setUserId(Integer id){
+//        this.userId = id;
+//    }
+//
+//    public Integer getBookId(){
+//        return bookId;
+//    }
+//    private void setBookId(Integer id){
+//        this.bookId = id;
+//    }
+//
+//    public int getQuantity(){
+//        return  quantity;
+//    }
+//    public  void  setQuantity(int quantity){
+//        this.quantity = quantity;
+//    }
+//
 
-    public Integer getBookId(){
-        return bookId;
-    }
-    private void setBookId(Integer id){
-        this.bookId = id;
-    }
-
-    public int getQuantity(){
-        return  quantity;
-    }
-    public  void  setQuantity(int quantity){
-        this.quantity = quantity;
-    }
+    public Book getBook(){return book;}
+    private void setBook(Book book){this.book = book;}
 }

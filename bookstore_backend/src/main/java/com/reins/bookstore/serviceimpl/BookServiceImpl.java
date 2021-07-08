@@ -7,10 +7,13 @@ import com.reins.bookstore.entity.OrderItems;
 import com.reins.bookstore.repository.BookRepository;
 import com.reins.bookstore.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * @ClassName BookServiceImpl
@@ -21,25 +24,24 @@ import java.util.List;
 
 @Service
 public class BookServiceImpl implements BookService {
-//
-//    @Autowired
-//    private BookRepository repository;
 
     @Autowired
     private BookDao bookDao;
 
+    @Override
     public void addBook(Book book){
         bookDao.storeBook(book);
     }
-
+    @Override
     public Book findBookById(Integer id) {
         return bookDao.findById(id);
     }
 
-    public List<Book> getBooks(boolean includeRemove) {
-        return bookDao.getBooks(includeRemove);
+    @Override
+    public Page<Book> getBooks(Optional<Integer> page, String query) {
+        return bookDao.getBooks(page,query);
     }
-
+    @Override
     public void updateBook(Integer bookId, String name, String author, String type, BigDecimal price, Integer inventory, String description, String isbn) {
         Book book = bookDao.findById(bookId);
         book.setName(name);
@@ -50,22 +52,19 @@ public class BookServiceImpl implements BookService {
         book.setIsbn(isbn);
         book.setDescription(description);
         bookDao.storeBook(book);
-
     }
-
-    public void reduceInventory(List<OrderItems> orders) {
-        for (OrderItems o : orders) {
-            Book book = bookDao.findById(o.getBookId());
-            book.setInventory(book.getInventory() - o.getQuantity());
-            bookDao.storeBook(book);
-        }
+    @Override
+    public void reduceInventory(OrderItems item) {
+        Book book = bookDao.findById(item.getBookId());
+        book.setInventory(book.getInventory() - item.getQuantity());
+        bookDao.storeBook(book);
     }
 
     @Override
     public void bookSoftRemove(Integer bookId){
-//        Book book = bookDao.findById(bookId);
-//        book.setRemoved(!book.getRemoved());
-//        bookDao.storeBook(book);
-        bookDao.remove(bookId);
+        // For hard Remove, switch book uncommand remove code.
+        Book book = bookDao.findById(bookId);
+        book.setRemoved(!book.getRemoved());
+        bookDao.storeBook(book);
     }
 }

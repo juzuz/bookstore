@@ -29,7 +29,7 @@ const MyProfile = () => {
     return (
         <div className='profile-container'>
             <Card className="profile-card">
-                <img className ="profile-pic" src={imgUrl}/>
+                <img alt="image" className ="profile-pic" src={imgUrl}/>
                 <div className ="profile-name">{userData.name}</div>
                 <div className="profile-info">
                     <div className="profile-username">{userData.username}</div>

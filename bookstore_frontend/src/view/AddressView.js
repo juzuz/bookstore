@@ -1,19 +1,15 @@
 import React from 'react';
-import {Layout, Carousel} from 'antd'
+import {Layout} from 'antd'
 import {HeaderInfo} from "../components/HeaderInfo";
 import {SideBar} from "../components/SideBar";
 import '../css/home.css'
 import {withRouter} from "react-router-dom";
 import Address from "../components/Address";
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content } = Layout;
 
 class AddressView extends React.Component{
 
-    constructor(props) {
-        super(props);
-
-    }
 
     componentDidMount(){
         let user = localStorage.getItem("user");

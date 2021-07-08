@@ -34,7 +34,7 @@ class BasicRoute extends React.Component{
         return(
             <Router history={history}>
                 <Switch>
-                    <PrivateRoute exact path="/" component={HomeView} />
+                    <PrivateRoute exact path="/" component={HomeView}  />
                     <LoginRoute exact path="/login" component={LoginView} />
                     <PrivateRoute exact path="/bookDetails" component={BookView} />
                     <Route path = "/register" component={RegisterView}/>
@@ -51,7 +51,6 @@ class BasicRoute extends React.Component{
                     <Route path = "/managerAnalysis" component={ManagerAnalyticView}/>
                     <Redirect from="/*" to="/" />
                 </Switch>
-
             </Router>
         )
     }

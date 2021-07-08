@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Card, Divider, Input, Icon, Checkbox} from "antd";
+import React from 'react';
 import "../css/address.css";
 
 import WrappedAddressForm from "./AddressForm";
@@ -7,19 +6,6 @@ import WrappedAddressForm from "./AddressForm";
 
 
 const AddAddress = () => {
-
-    const [name,setName] = useState("");
-    const [phone,setPhone] = useState("");
-    const [add,setAdd] = useState("");
-
-    const textHandler = (type,val) => {
-        if(type ==="name")
-            setName(val)
-        if(type==="phone")
-            setPhone(val)
-        if(type==="add")
-            setAdd(val)
-    }
 
 
 

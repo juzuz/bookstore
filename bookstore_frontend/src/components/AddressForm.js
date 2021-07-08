@@ -9,9 +9,6 @@ import {history} from "../utils/history";
 class AddressForm extends React.Component {
 
 
-    receiptHandler = use => {
-        console.log(use)
-    }
 
     handleSubmit = (e,use) => {
         e.preventDefault();
@@ -27,7 +24,7 @@ class AddressForm extends React.Component {
                     phone: formData.getFieldValue("phone"),
                     address: formData.getFieldValue('address')
                 }
-                if(type == "console") {
+                if(type === "console") {
                     const callbackConsole = (status) => {
                         if (status)
                             history.push("/address")
@@ -81,7 +78,7 @@ class AddressForm extends React.Component {
                     )}
                 </Form.Item>
 
-                {type == "console" ?
+                {type === "console" ?
                     <Form.Item>
                         <Button type="primary" className="login-form-button"
                                 onClick={this.handleSubmit}>
@@ -96,13 +93,7 @@ class AddressForm extends React.Component {
                                 Save address and use
                             </Button>
                         </Form.Item>
-                        <Form.Item>
-                            <Button type="primary"  className="login-form-button"
-                                    onClick={e=>this.handleSubmit(e,1)}
-                                    >
-                                Use as one-time address
-                            </Button>
-                        </Form.Item>
+
                     </div>
                 }
             </Form>
