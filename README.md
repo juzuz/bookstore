@@ -9,18 +9,18 @@ The backend uses Springboot and Hibernate to manage requests from the frontend s
 
 ## Results
 Basic User UI
-![login](/login.png)
-![home](/userHome.png)
-![query](/query.png)
-![bookInfo](/bookInfo.png)
-![cart](/cart.png)
-![purchase](/purchase.png)
-![orders](/orders.png)
-![analytics](/analytics.png)
+![login](/assets/login.png)
+![home](/assets/userHome.png)
+![query](/assets/query.png)
+![bookInfo](/assets/bookInfo.png)
+![cart](/assets/cart.png)
+![purchase](/assets/purchase.png)
+![orders](/assets/orders.png)
+![analytics](/assets/analytics.png)
 
 Manager UI
-![ranking](/ranking.png)
-![bookManagement](/bookManagement.png)
+![ranking](/assets/ranking.png)
+![bookManagement](/assets/bookManagement.png)
 
 ## Experience
 
